@@ -4,14 +4,14 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 S_SRCS += \
-C:/tmp/1m/test_11/SW4STM32/startup_stm32f407xx.s 
+C:/Git/All2Can-STM32F407/test_11/SW4STM32/startup_stm32f407xx.s 
 
 OBJS += \
 ./Application/SW4STM32/startup_stm32f407xx.o 
 
 
 # Each subdirectory must supply rules for building sources it contributes
-Application/SW4STM32/startup_stm32f407xx.o: C:/tmp/1m/test_11/SW4STM32/startup_stm32f407xx.s
+Application/SW4STM32/startup_stm32f407xx.o: C:/Git/All2Can-STM32F407/test_11/SW4STM32/startup_stm32f407xx.s
 	@echo 'Building file: $<'
 	@echo 'Invoking: MCU GCC Assembler'
 	@echo $(PWD)

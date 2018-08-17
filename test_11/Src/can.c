@@ -73,53 +73,8 @@ void MX_CAN1_Init(void)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
-  sFilterConfig.FilterBank=0;
-    sFilterConfig.FilterMode=CAN_FILTERMODE_IDMASK;
-    sFilterConfig.FilterScale=CAN_FILTERSCALE_32BIT;
-    sFilterConfig.FilterIdHigh=0x0000;
-    sFilterConfig.FilterIdLow=0x0000;
-    sFilterConfig.FilterMaskIdHigh=0x0000;
-    sFilterConfig.FilterMaskIdLow=0x0000;
-    sFilterConfig.FilterFIFOAssignment=CAN_RX_FIFO0;
-    sFilterConfig.FilterActivation=ENABLE;
-    sFilterConfig.SlaveStartFilterBank=14;
-    if(HAL_CAN_ConfigFilter(&hcan1,&sFilterConfig)!=HAL_OK)
-    {/* Filter configuration Error */
-  	  Error_Handler();
-    }
 
-    if(HAL_CAN_Start(&hcan1)!=HAL_OK)
-    {/* Start Error */
-  	  Error_Handler();
-    }
-
-    if(HAL_CAN_ActivateNotification(&hcan1,CAN_IT_RX_FIFO0_MSG_PENDING |CAN_IT_TX_MAILBOX_EMPTY)!=HAL_OK)
-    {/* Notification Error */
-  	  Error_Handler();
-    }
-
-    TxHeader.StdId=0x321;
-    TxHeader.ExtId=0x01;
-    TxHeader.RTR=CAN_RTR_DATA;
-    TxHeader.IDE=CAN_ID_STD;
-    TxHeader.DLC=8;
-    TxHeader.TransmitGlobalTime=DISABLE;
-    TxData[0]=1;
-    TxData[1]=2;
-    TxData[2]=3;
-    TxData[3]=4;
-    TxData[4]=5;
-    TxData[5]=6;
-    TxData[6]=7;
-    TxData[7]=8;
-  }
-
-  void JDO_SendCan(void)
-  {
-  	HAL_CAN_AddTxMessage(&hcan1,&TxHeader,TxData,&TxMailbox);
-  	HAL_Delay(500);
-  	TxData[7]=TxData[7]+1;
-  }
+}
 
 void HAL_CAN_MspInit(CAN_HandleTypeDef* canHandle)
 {
@@ -191,6 +146,55 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef*hcan)
 {
 	HAL_CAN_GetRxMessage(&hcan1,CAN_RX_FIFO0,&RxHeader,RxData);
 	HAL_GPIO_TogglePin(LED_Green_GPIO_Port,LED_Green_Pin);
+}
+void JDO_SendCan(void)
+{
+	HAL_CAN_AddTxMessage(&hcan1,&TxHeader,TxData,&TxMailbox);
+	HAL_Delay(500);
+	TxData[7]=TxData[7]+1;
+}
+
+void JDO_CanInit(void)
+{
+	sFilterConfig.FilterBank=0;
+	sFilterConfig.FilterMode=CAN_FILTERMODE_IDMASK;
+	sFilterConfig.FilterScale=CAN_FILTERSCALE_32BIT;
+	sFilterConfig.FilterIdHigh=0x0000;
+	sFilterConfig.FilterIdLow=0x0000;
+	sFilterConfig.FilterMaskIdHigh=0x0000;
+	sFilterConfig.FilterMaskIdLow=0x0000;
+	sFilterConfig.FilterFIFOAssignment=CAN_RX_FIFO0;
+	sFilterConfig.FilterActivation=ENABLE;
+	sFilterConfig.SlaveStartFilterBank=14;
+	if(HAL_CAN_ConfigFilter(&hcan1,&sFilterConfig)!=HAL_OK)
+	{/* Filter configuration Error */
+	  Error_Handler();
+	}
+
+	if(HAL_CAN_Start(&hcan1)!=HAL_OK)
+	{/* Start Error */
+	  Error_Handler();
+	}
+
+	if(HAL_CAN_ActivateNotification(&hcan1,CAN_IT_RX_FIFO0_MSG_PENDING |CAN_IT_TX_MAILBOX_EMPTY)!=HAL_OK)
+	{/* Notification Error */
+	  Error_Handler();
+	}
+
+	TxHeader.StdId=0x321;
+	TxHeader.ExtId=0x01;
+	TxHeader.RTR=CAN_RTR_DATA;
+	TxHeader.IDE=CAN_ID_STD;
+	TxHeader.DLC=8;
+	TxHeader.TransmitGlobalTime=DISABLE;
+	TxData[0]=1;
+	TxData[1]=2;
+	TxData[2]=3;
+	TxData[3]=4;
+	TxData[4]=5;
+	TxData[5]=6;
+	TxData[6]=7;
+	TxData[7]=8;
 }
 /* USER CODE END 1 */
 

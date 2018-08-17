@@ -61,9 +61,9 @@ extern void _Error_Handler(char *, int);
 
 void MX_CAN1_Init(void);
 
-
 /* USER CODE BEGIN Prototypes */
 void JDO_SendCan(void);
+void JDO_CanInit(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus
