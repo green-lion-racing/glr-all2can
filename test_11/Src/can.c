@@ -145,11 +145,13 @@ void HAL_CAN_TxMailbox0CompleteCallback(CAN_HandleTypeDef*hcan)
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef*hcan)
 {
 	HAL_CAN_GetRxMessage(&hcan1,CAN_RX_FIFO0,&RxHeader,RxData);
-	if(RxData[7]&0x01) HAL_GPIO_WritePin(LED_Green_GPIO_Port,LED_Green_Pin,1);
-	else HAL_GPIO_WritePin(LED_Green_GPIO_Port,LED_Green_Pin,0);
-	if(RxData[7]&0x02) HAL_GPIO_WritePin(LED_Red_GPIO_Port,LED_Red_Pin,1);
-	else HAL_GPIO_WritePin(LED_Red_GPIO_Port,LED_Red_Pin,0);
-}
+	//if(RxHeader.StdId == 0x773){
+		if(RxData[5]>=25) HAL_GPIO_WritePin(LED_Green_GPIO_Port,LED_Green_Pin,1);
+		else HAL_GPIO_WritePin(LED_Green_GPIO_Port,LED_Green_Pin,0);
+		if(RxData[5]>=50) HAL_GPIO_WritePin(LED_Red_GPIO_Port,LED_Red_Pin,1);
+		else HAL_GPIO_WritePin(LED_Red_GPIO_Port,LED_Red_Pin,0);
+		//}
+	}
 void JDO_SendCan(void)
 {
 	HAL_CAN_AddTxMessage(&hcan1,&TxHeader,TxData,&TxMailbox);
@@ -163,9 +165,9 @@ void JDO_CanInit(void)
 	sFilterConfig.FilterBank=0;
 	sFilterConfig.FilterMode=CAN_FILTERMODE_IDMASK;
 	sFilterConfig.FilterScale=CAN_FILTERSCALE_16BIT;
-	sFilterConfig.FilterIdHigh=0x0321<<5;
-	sFilterConfig.FilterIdLow=0x0000;
-	sFilterConfig.FilterMaskIdHigh=0x1FFE<<5;//muss hier geshifted werden???
+	sFilterConfig.FilterIdHigh=0x0773<<5;
+	sFilterConfig.FilterIdLow=0x0773<<5;
+	sFilterConfig.FilterMaskIdHigh=0x1FFF<<5;//muss hier geshifted werden???
 	sFilterConfig.FilterMaskIdLow=0x1FFF<<5;
 	sFilterConfig.FilterFIFOAssignment=CAN_RX_FIFO0;
 	sFilterConfig.FilterActivation=ENABLE;
