@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<projectDescription>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><projectDescription>
 	<name>F3_Blink_Test2</name>
-	<comment />
+	<comment/>
 	<projects>
 	</projects>
 	<buildSpec>
@@ -26,6 +25,10 @@
 	</natures>
 	<linkedResources>
     <link>
+      <name>Application/SW4STM32/syscalls.c</name>
+      <type>1</type>
+      <location>PARENT-1-PROJECT_LOC/syscalls.c</location>
+    </link><link>
       <name>Application/SW4STM32/startup_stm32f303x8.s</name>
       <type>1</type>
       <location>PARENT-1-PROJECT_LOC/startup_stm32f303x8.s</location>

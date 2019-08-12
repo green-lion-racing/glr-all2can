@@ -50,9 +50,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "can.h"
 
-#include "gpio.h"
-
 /* USER CODE BEGIN 0 */
+#include "gpio.h"
 CAN_FilterTypeDef	sFilterConfig;
 CAN_TxHeaderTypeDef	TxHeader;
 CAN_RxHeaderTypeDef	RxHeader;
@@ -192,7 +191,7 @@ void JDO_GetCan(void)
 				HAL_GPIO_WritePin(GPIOA, ignitioncut_out_Pin, 0); //invertet, 'cause pull up in hardware
 				osDelay(10);
 				HAL_GPIO_WritePin(GPIOA, ignitioncut_out_Pin, 1); // Pin4 //gearcut+
-				osDelay(150);
+				osDelay(50);
 				HAL_GPIO_WritePin(GPIOA, upshift_out_Pin, 1); // Pin2
 				osDelay(125); //125 aktueller   //75war mal ganz ok
 				HAL_GPIO_WritePin(GPIOA, upshift_out_Pin, 0);
