@@ -61,7 +61,6 @@ uint32_t TxMailbox;
 #define clutch 	0
 #define upshift		1
 #define downshift 	2
-#define greenled	7
 //uint8_t newCanMessage = 0;
 /* USER CODE END 0 */
 
@@ -166,11 +165,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan1)
 void JDO_SendCan(void)
 {
 	HAL_CAN_AddTxMessage(&hcan,&TxHeader,TxData,&TxMailbox);
-	//HAL_Delay(500);
 	TxData[7]=TxData[7]+1;
- //   HAL_GPIO_WritePin(LED_Green_GPIO_Port, LED_Green_Pin, GPIO_PIN_SET); //Geaenderte Zeile
-//	HAL_GPIO_TogglePin(GPIOA, DO0_Pin);
-	//GPIO_Out2_Pin
 }
 
 void JDO_GetCan(void)
@@ -179,6 +174,7 @@ void JDO_GetCan(void)
 	if (HAL_CAN_GetRxMessage(&hcan, CAN_RX_FIFO0, &RxHeader, RxData) != HAL_OK) {}
 	switch(RxHeader.StdId){
 		case (0x101):
+			HAL_GPIO_WritePin(LED_Y_GPIO_Port, LED_Y_Pin, 0); //turn on yellow LED on RJ45 connector when receiwing a 0x101 message
 			if(RxData[0] & 1<<clutch){ //clutch
 				HAL_GPIO_WritePin(GPIOA, clutch_out_Pin, 1); //cluch_out_Pin = Pin1 = DO0_Pin (in earlier version)
 				//Kuppling dauerhaft offen
@@ -208,9 +204,10 @@ void JDO_GetCan(void)
 				}
 			}
 			if(RxData[0] & 1<<greenled)  //128
-				HAL_GPIO_WritePin(GPIOB, DO7_Pin, 1); //Grünes Licht
+				HAL_GPIO_WritePin(LED_G_GPIO_Port, LED_G_Pin, 0); //turn on green LED on RJ45 connector
 			else
-				HAL_GPIO_WritePin(GPIOB, DO7_Pin, 0); //Grünes Licht aus
+				HAL_GPIO_WritePin(LED_G_GPIO_Port, LED_G_Pin, 1); //turn off green LED on RJ45 connector
+			HAL_GPIO_WritePin(LED_Y_GPIO_Port, LED_Y_Pin, 1); //turn yellow LED back off
 	break;
 
 	}
