@@ -53,11 +53,10 @@
 #include "task.h"
 #include "main.h"
 #include "cmsis_os.h"
-#include "can.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */     
-
+#include "can.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -67,7 +66,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+//#define ph_debug
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -78,6 +77,7 @@
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
 volatile uint8_t nCM =0;
+
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
 osThreadId TaskSendCanHandle;
@@ -117,30 +117,27 @@ void MX_FREERTOS_Init(void) {
   /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
 
+  /* USER CODE BEGIN RTOS_QUEUES */
+  /* add queues, ... */
+  /* USER CODE END RTOS_QUEUES */
+
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
   osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
-#ifdef ph_debug
   /* definition and creation of TaskSendCan */
-  osThreadDef(TaskSendCan, TaskSend, osPriorityNormal, 0, 128);
+  osThreadDef(TaskSendCan, TaskSend, osPriorityLow, 0, 128);
   TaskSendCanHandle = osThreadCreate(osThread(TaskSendCan), NULL);
-#endif //ph_debug
 
   /* definition and creation of TaskGetCan */
   osThreadDef(TaskGetCan, TaskGet, osPriorityNormal, 0, 128);
   TaskGetCanHandle = osThreadCreate(osThread(TaskGetCan), NULL);
 
-
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
 
-
-  /* USER CODE BEGIN RTOS_QUEUES */
-  /* add queues, ... */
-  /* USER CODE END RTOS_QUEUES */
 }
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -175,16 +172,15 @@ void TaskSend(void const * argument)
 {
   /* USER CODE BEGIN TaskSend */
   /* Infinite loop */
-#ifdef ph_debug
   for(;;)
   {
 	  osDelay(500);
+	#ifdef ph_debug
 	  JDO_SendCan();
+	#endif //debug
   }
-#endif //debug
   /* USER CODE END TaskSend */
 }
-
 
 /* USER CODE BEGIN Header_TaskGet */
 /**

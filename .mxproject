@@ -1,7 +1,7 @@
 [PreviousGenFiles]
-HeaderPath=C:/GitHub_Projekte/all2can/Inc
+HeaderPath=C:/Users/Acer/Desktop/uni/Git/all2can/Inc
 HeaderFiles=gpio.h;can.h;stm32f3xx_it.h;stm32f3xx_hal_conf.h;main.h;FreeRTOSConfig.h;
-SourcePath=C:/GitHub_Projekte/all2can/Src
+SourcePath=C:/Users/Acer/Desktop/uni/Git/all2can/Src
 SourceFiles=gpio.c;can.c;stm32f3xx_it.c;stm32f3xx_hal_msp.c;main.c;freertos.c;
 
 [PreviousLibFiles]
