@@ -31,6 +31,8 @@
 /* USER CODE END 1 */
 
 /** Configure pins
+     PB0   ------> SharedAnalog_PB0
+     PB1   ------> SharedAnalog_PB1
 */
 void MX_GPIO_Init(void)
 {
@@ -73,8 +75,8 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PBPin PBPin */
-  GPIO_InitStruct.Pin = DI6_Pin|DI7_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pin = Sups_Poti_7_Pin|Susp_Poti_8_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 

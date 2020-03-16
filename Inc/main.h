@@ -74,10 +74,10 @@ void Error_Handler(void);
 #define DI4_GPIO_Port GPIOA
 #define DI5_Pin GPIO_PIN_5
 #define DI5_GPIO_Port GPIOA
-#define DI6_Pin GPIO_PIN_0
-#define DI6_GPIO_Port GPIOB
-#define DI7_Pin GPIO_PIN_1
-#define DI7_GPIO_Port GPIOB
+#define Sups_Poti_7_Pin GPIO_PIN_0
+#define Sups_Poti_7_GPIO_Port GPIOB
+#define Susp_Poti_8_Pin GPIO_PIN_1
+#define Susp_Poti_8_GPIO_Port GPIOB
 #define clutch_out_Pin GPIO_PIN_8
 #define clutch_out_GPIO_Port GPIOA
 #define upshift_out_Pin GPIO_PIN_9

@@ -82,6 +82,7 @@ volatile uint8_t nCM =0;
 osThreadId defaultTaskHandle;
 osThreadId TaskSendCanHandle;
 osThreadId TaskGetCanHandle;
+osThreadId TaskGetSuspensiHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -91,6 +92,7 @@ osThreadId TaskGetCanHandle;
 void StartDefaultTask(void const * argument);
 void TaskSend(void const * argument);
 void TaskGet(void const * argument);
+void TaskGetS(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -133,6 +135,10 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of TaskGetCan */
   osThreadDef(TaskGetCan, TaskGet, osPriorityNormal, 0, 128);
   TaskGetCanHandle = osThreadCreate(osThread(TaskGetCan), NULL);
+
+  /* definition and creation of TaskGetSuspensi */
+  osThreadDef(TaskGetSuspensi, TaskGetS, osPriorityBelowNormal, 0, 128);
+  TaskGetSuspensiHandle = osThreadCreate(osThread(TaskGetSuspensi), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -202,6 +208,24 @@ void TaskGet(void const * argument)
 	  nCM =0;
   }
   /* USER CODE END TaskGet */
+}
+
+/* USER CODE BEGIN Header_TaskGetS */
+/**
+* @brief Function implementing the TaskGetSuspensi thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_TaskGetS */
+void TaskGetS(void const * argument)
+{
+  /* USER CODE BEGIN TaskGetS */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END TaskGetS */
 }
 
 /* Private application code --------------------------------------------------*/
