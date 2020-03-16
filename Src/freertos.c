@@ -223,7 +223,14 @@ void TaskGetS(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+    //Start ADC
+    HAL_ADC_Start(&hadc1);
+    //Start Conversion(s?)
+    HAL_ADC_PollForConversion(&hadc1, 100);
+    //Get Value 1 and 2 and send them to CAN
+    JDO_SendPoti1(HAL_ADC_GetValue(&hadc1),HAL_ADC_GetValue(&hadc1));
+    HAL_ADC_Stop(&hadc1);
+    osDelay(10);
   }
   /* USER CODE END TaskGetS */
 }
