@@ -142,7 +142,7 @@ void JDO_SendCan(void)
 	TxData[7]=TxData[7]+1;
 }
 
-void JDO_SendPoti1(uint8_t DataLeft, uint8_t DataRight)
+void JDO_SendPoti(uint8_t DataLeft, uint8_t DataRight)
 {
 	TxHeader.DLC=2;
 	TxHeader.IDE=0x150;

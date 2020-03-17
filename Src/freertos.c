@@ -222,13 +222,13 @@ void TaskGetS(void const * argument)
   /* USER CODE BEGIN TaskGetS */
   /* Infinite loop */
   for(;;)
-  {
+  { //TODO: Check if usage of HAL_ADC PollForConversion and GetValue are used correctly (inteded function is to read the two different GPIO's)
     //Start ADC
     HAL_ADC_Start(&hadc1);
     //Start Conversion(s?)
     HAL_ADC_PollForConversion(&hadc1, 100);
     //Get Value 1 and 2 and send them to CAN
-    JDO_SendPoti1(HAL_ADC_GetValue(&hadc1),HAL_ADC_GetValue(&hadc1));
+    JDO_SendPoti(HAL_ADC_GetValue(&hadc1),HAL_ADC_GetValue(&hadc1));
     HAL_ADC_Stop(&hadc1);
     osDelay(10);
   }
