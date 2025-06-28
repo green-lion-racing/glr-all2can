@@ -33,7 +33,8 @@
 extern ADC_HandleTypeDef hadc1;
 
 /* USER CODE BEGIN Private defines */
-
+#define ADC1_BUFFER_LENGTH 3
+uint16_t adc1_buffer[ADC1_BUFFER_LENGTH];
 /* USER CODE END Private defines */
 
 void MX_ADC1_Init(void);
