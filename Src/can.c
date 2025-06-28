@@ -28,11 +28,6 @@ CAN_RxHeaderTypeDef	RxHeader;
 uint8_t TxData[8];
 uint8_t RxData[8];
 uint32_t TxMailbox;
-#define clutch 	0
-#define upshift		1
-#define downshift 	2
-#define greenled 	7
-//uint8_t newCanMessage = 0;
 /* USER CODE END 0 */
 
 CAN_HandleTypeDef hcan;
@@ -90,7 +85,6 @@ void HAL_CAN_MspInit(CAN_HandleTypeDef* canHandle)
     HAL_NVIC_SetPriority(CAN_RX0_IRQn, 5, 0);
     HAL_NVIC_EnableIRQ(CAN_RX0_IRQn);
   /* USER CODE BEGIN CAN_MspInit 1 */
-    HAL_GPIO_WritePin(GPIOA, ignitioncut_out_Pin, 1); //to start with 0V
   /* USER CODE END CAN_MspInit 1 */
   }
 }
@@ -130,8 +124,6 @@ void HAL_CAN_TxMailbox0CompleteCallback(CAN_HandleTypeDef *hcan1)
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan1)
 {
 	if (HAL_CAN_GetRxMessage(&hcan, CAN_RX_FIFO0, &RxHeader, RxData) != HAL_OK) {}
-	newCanMessage();// = 1;
-
 }
 
 void JDO_SendCan(void)
@@ -142,70 +134,26 @@ void JDO_SendCan(void)
 	TxData[7]=TxData[7]+1;
 }
 
-void JDO_SendPoti(uint8_t DataLeft, uint8_t DataRight)
-{
-	TxHeader.DLC=2;
-	TxHeader.IDE=0x150;
-	TxData[0]=DataLeft;
-	TxData[1]=DataRight;
-	HAL_CAN_AddTxMessage(&hcan,&TxHeader,TxData,&TxMailbox);
-}
-
 void JDO_GetCan(void)
 {
-
 	if (HAL_CAN_GetRxMessage(&hcan, CAN_RX_FIFO0, &RxHeader, RxData) != HAL_OK) {}
 	switch(RxHeader.StdId){
 		case (0x101):
-			HAL_GPIO_WritePin(LED_Y_GPIO_Port, LED_Y_Pin, 0); //turn on yellow LED on RJ45 connector when receiwing a 0x101 message
-			if(RxData[0] & 1<<clutch){ //clutch
-				HAL_GPIO_WritePin(GPIOA, clutch_out_Pin, 1); //cluch_out_Pin = Pin1 = DO0_Pin (in earlier version)
-				//Kuppling dauerhaft offen
-			}
-			if( !(RxData[0] & 1<<clutch) ){
-				HAL_GPIO_WritePin(GPIOA, clutch_out_Pin, 0);
-				//Kuppling dauerhaft geschlossen
-			}
-			if(RxData[0] & 1<<upshift){	//hochschalten 2
-				HAL_GPIO_WritePin(GPIOA, ignitioncut_out_Pin, 0); //invertet, 'cause pull up in hardware
-				osDelay(10);
-				HAL_GPIO_WritePin(GPIOA, ignitioncut_out_Pin, 1); // Pin4 //gearcut+
-				osDelay(50);
-				HAL_GPIO_WritePin(GPIOA, upshift_out_Pin, 1); // Pin2
-				osDelay(125); //125 aktueller   //75war mal ganz ok
-				HAL_GPIO_WritePin(GPIOA, upshift_out_Pin, 0);
-			}
-			else if(RxData[0] & 1<<downshift){	//Runter schalten 4
-				HAL_GPIO_WritePin(GPIOA, clutch_out_Pin, 1);
-				osDelay(20);
-				HAL_GPIO_WritePin(GPIOA, downshift_out_Pin, 1); //Pin3
-				osDelay(275); // 275 besser //175  klappt
-				HAL_GPIO_WritePin(GPIOA, downshift_out_Pin, 0);
-				if( !(RxData[0] & 1<<clutch) ){
-					HAL_GPIO_WritePin(GPIOA, clutch_out_Pin, 0);
-					//Kupplung wird geschlossen, wenn das Kupplungsbit nicht gesetzt ist
-				}
-			}
-			if(RxData[0] & 1<<greenled)  //128
-				HAL_GPIO_WritePin(LED_G_GPIO_Port, LED_G_Pin, 0); //turn on green LED on RJ45 connector
-			else
-				HAL_GPIO_WritePin(LED_G_GPIO_Port, LED_G_Pin, 1); //turn off green LED on RJ45 connector
-			HAL_GPIO_WritePin(LED_Y_GPIO_Port, LED_Y_Pin, 1); //turn yellow LED back off
-	break;
-
+			break;
+		default:
+			break;
 	}
-
 }
 
 void JDO_CanInit(void)
 {
-	/* Filter noch mal �berpr�fen!!! */
+	/* Filter noch mal überprüfen!!! */
 	sFilterConfig.FilterBank=0;
 	sFilterConfig.FilterMode=CAN_FILTERMODE_IDMASK;
 	sFilterConfig.FilterScale=CAN_FILTERSCALE_32BIT;
 	sFilterConfig.FilterIdHigh=0x0101<<5; //0x0700;
 	sFilterConfig.FilterIdLow=0x0000<<5;
-	sFilterConfig.FilterMaskIdHigh=0x1FFF<<5;//0x1FFF<<5;//muss hier geshifted werden???
+	sFilterConfig.FilterMaskIdHigh=0x1FFF<<5;//0x1FFF<<5; //muss hier geshifted werden???
 	sFilterConfig.FilterMaskIdLow=0;//0x1FFF<<5;
 	sFilterConfig.FilterFIFOAssignment=CAN_RX_FIFO0;
 	sFilterConfig.FilterActivation=ENABLE;
