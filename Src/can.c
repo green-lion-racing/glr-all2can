@@ -128,20 +128,32 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan1)
 
 void JDO_SendCan(void)
 {
-	TxHeader.DLC=8;
-	TxHeader.IDE=CAN_ID_STD;
-	HAL_CAN_AddTxMessage(&hcan,&TxHeader,TxData,&TxMailbox);
-	TxData[7]=TxData[7]+1;
+
+  TxHeader.StdId = 0x404;
+  TxHeader.RTR = CAN_RTR_DATA;
+  TxHeader.DLC = 1;
+  TxHeader.TransmitGlobalTime=DISABLE;
+  HAL_CAN_AddTxMessage(&hcan, &TxHeader, TxData, &TxMailbox);
+  TxData[7]=TxData[7]+1;
 }
 
 void JDO_GetCan(void)
 {
-	if (HAL_CAN_GetRxMessage(&hcan, CAN_RX_FIFO0, &RxHeader, RxData) != HAL_OK) {}
-	switch(RxHeader.StdId){
-		case (0x101):
-			break;
-		default:
-			break;
+	if (HAL_CAN_GetRxFifoFillLevel(&hcan, CAN_RX_FIFO0) > 0) {
+	    CAN_RxHeaderTypeDef RxHeader;
+	    uint8_t RxData[8];
+	    if (HAL_CAN_GetRxMessage(&hcan, CAN_RX_FIFO0, &RxHeader, RxData) == HAL_OK) {
+	    	switch(RxHeader.StdId){
+	    			case (0x777):
+	    				HAL_GPIO_WritePin(LED_Y_GPIO_Port, LED_Y_Pin, GPIO_PIN_SET);
+	    			    osDelay(500);
+	    				HAL_GPIO_WritePin(LED_Y_GPIO_Port, LED_Y_Pin, GPIO_PIN_RESET);
+	    			    osDelay(500);
+	    				break;
+	    			default:
+	    				break;
+	    		}
+	    }
 	}
 }
 
@@ -156,7 +168,7 @@ void JDO_CanInit(void)
 	sFilterConfig.FilterMaskIdHigh=0x1FFF<<5;//0x1FFF<<5; //muss hier geshifted werden???
 	sFilterConfig.FilterMaskIdLow=0;//0x1FFF<<5;
 	sFilterConfig.FilterFIFOAssignment=CAN_RX_FIFO0;
-	sFilterConfig.FilterActivation=ENABLE;
+	sFilterConfig.FilterActivation=CAN_FILTER_DISABLE;
 	sFilterConfig.SlaveStartFilterBank=14;
 	if(HAL_CAN_ConfigFilter(&hcan,&sFilterConfig)!=HAL_OK)
 	{/* Filter configuration Error */

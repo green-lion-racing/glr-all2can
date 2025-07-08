@@ -156,14 +156,55 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 } 
 
 /* USER CODE BEGIN 1 */
+#define SHORT_TO_VCC_THRESHOLD     4000      // ADC count threshold for VCC short (~3.2V @ 3.3V)
+#define IMPLAUSIBILITY_PERCENT     10.0f     // 10% difference allowed
+#define IMPLAUSIBILITY_TIME_MS     100       // 100 ms duration to confirm fault
+#define ADC_CALLBACK_INTERVAL_MS   1         // Assuming callback every ~1ms
+
+/*bool sensor_implausible = false;
+
+static uint32_t implausibility_timer = 0;
+static uint32_t short_to_vcc_timer = 0;
+
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
     if (hadc->Instance == ADC1) {
         uint16_t ch0 = adc1_buffer[0];
         uint16_t ch1 = adc1_buffer[1];
 
+
+        // === Short Circuit Detection ===
+        sensor0_short = ch0 > SHORT_TO_VCC_THRESHOLD;
+        sensor1_short = ch1 > SHORT_TO_VCC_THRESHOLD;
+
+        // === Implausibility Detection ===
+        if (ch0 > 0 && ch1 > 0)
+        {
+            uint16_t max_val = (ch0 > ch1) ? ch0 : ch1;
+            uint16_t min_val = (ch0 < ch1) ? ch0 : ch1;
+            float diff_percent = ((float)(max_val - min_val) / max_val) * 100.0f;
+
+            if (diff_percent > IMPLAUSIBILITY_PERCENT)
+            {
+                implausibility_duration += ADC_CALLBACK_INTERVAL_MS;
+                if (implausibility_duration >= IMPLAUSIBILITY_TIME_MS)
+                {
+                    sensor_implausible = true;
+                }
+            }
+            else
+            {
+                implausibility_duration = 0;
+                sensor_implausible = false;
+            }
+        }
+        else
+        {
+            // Treat as implausible if either signal is 0
+            sensor_implausible = true;
+        }
     }
-}
+}*/
 /* USER CODE END 1 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

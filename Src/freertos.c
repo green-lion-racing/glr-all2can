@@ -159,9 +159,14 @@ void StartDefaultTask(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-  //  osDelay(500);
- //   JDO_SendCan();
- //   JDO_GetCan();
+
+	HAL_GPIO_WritePin(LED_G_GPIO_Port, LED_G_Pin, GPIO_PIN_SET);
+	osDelay(500);
+	HAL_GPIO_WritePin(LED_G_GPIO_Port, LED_G_Pin, GPIO_PIN_RESET);
+	osDelay(500);
+	osDelay(50);
+    JDO_SendCan();
+    JDO_GetCan();
   }
   /* USER CODE END StartDefaultTask */
 }
