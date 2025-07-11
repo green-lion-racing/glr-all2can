@@ -85,21 +85,9 @@
       <type>1</type>
       <location>PARENT-2-PROJECT_LOC/Src/system_stm32f3xx.c</location>
     </link><link>
-      <name>Application/User/adc.c</name>
-      <type>1</type>
-      <location>PARENT-2-PROJECT_LOC/Src/adc.c</location>
-    </link><link>
       <name>Application/User/sys.c</name>
       <type>1</type>
       <location>PARENT-2-PROJECT_LOC/Src/sys.c</location>
-    </link><link>
-      <name>Drivers/STM32F3xx_HAL_Driver/stm32f3xx_hal_adc.c</name>
-      <type>1</type>
-      <location>PARENT-2-PROJECT_LOC/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_adc.c</location>
-    </link><link>
-      <name>Drivers/STM32F3xx_HAL_Driver/stm32f3xx_hal_adc_ex.c</name>
-      <type>1</type>
-      <location>PARENT-2-PROJECT_LOC/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_adc_ex.c</location>
     </link><link>
       <name>Drivers/STM32F3xx_HAL_Driver/stm32f3xx_hal.c</name>
       <type>1</type>
@@ -201,8 +189,16 @@
       <type>1</type>
       <location>PARENT-2-PROJECT_LOC/Src/stm32f3xx_hal_timebase_tim.c</location>
     </link><link>
-      <name>Application/User/dma.c</name>
+      <name>Application/User/adc.c</name>
       <type>1</type>
-      <location>PARENT-2-PROJECT_LOC/Src/dma.c</location>
+      <location>PARENT-2-PROJECT_LOC/Src/adc.c</location>
+    </link><link>
+      <name>Drivers/STM32F3xx_HAL_Driver/stm32f3xx_hal_adc.c</name>
+      <type>1</type>
+      <location>PARENT-2-PROJECT_LOC/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_adc.c</location>
+    </link><link>
+      <name>Drivers/STM32F3xx_HAL_Driver/stm32f3xx_hal_adc_ex.c</name>
+      <type>1</type>
+      <location>PARENT-2-PROJECT_LOC/Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_adc_ex.c</location>
     </link></linkedResources>
 </projectDescription>

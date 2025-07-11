@@ -23,7 +23,6 @@
 #include "cmsis_os.h"
 #include "adc.h"
 #include "can.h"
-#include "dma.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -97,7 +96,6 @@ int main(void)
   MX_GPIO_Init();
   MX_CAN_Init();
   MX_ADC1_Init();
-  MX_DMA_Init();
   /* USER CODE BEGIN 2 */
   JDO_CanInit();
   /* USER CODE END 2 */

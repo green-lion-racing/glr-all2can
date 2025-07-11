@@ -62,16 +62,14 @@ void Error_Handler(void);
 #define LED_G_GPIO_Port GPIOF
 #define LED_Y_Pin GPIO_PIN_1
 #define LED_Y_GPIO_Port GPIOF
-#define PEDAL_ACCELERATOR_1_Pin GPIO_PIN_0
-#define PEDAL_ACCELERATOR_1_GPIO_Port GPIOA
-#define PEDAL_ACCELERATOR_2_Pin GPIO_PIN_1
-#define PEDAL_ACCELERATOR_2_GPIO_Port GPIOA
+#define INVERTER_ACTIVE_Pin GPIO_PIN_0
+#define INVERTER_ACTIVE_GPIO_Port GPIOA
 #define PEDAL_BRAKE_Pin GPIO_PIN_2
 #define PEDAL_BRAKE_GPIO_Port GPIOA
-#define SPEED_1_Pin GPIO_PIN_0
-#define SPEED_1_GPIO_Port GPIOB
-#define SPEED_2_Pin GPIO_PIN_1
-#define SPEED_2_GPIO_Port GPIOB
+#define SOUND_BUZZER_Pin GPIO_PIN_3
+#define SOUND_BUZZER_GPIO_Port GPIOB
+#define BRAKE_LIGHT_Pin GPIO_PIN_4
+#define BRAKE_LIGHT_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

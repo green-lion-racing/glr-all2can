@@ -53,7 +53,6 @@ void MemManage_Handler(void);
 void BusFault_Handler(void);
 void UsageFault_Handler(void);
 void DebugMon_Handler(void);
-void DMA1_Channel1_IRQHandler(void);
 void CAN_TX_IRQHandler(void);
 void CAN_RX0_IRQHandler(void);
 void TIM1_UP_TIM16_IRQHandler(void);

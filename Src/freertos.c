@@ -57,6 +57,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */     
 #include "can.h"
+#include "adc.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -79,19 +80,17 @@
 volatile uint8_t nCM =0;
 
 /* USER CODE END Variables */
-osThreadId defaultTaskHandle;
-osThreadId TaskSendCanHandle;
-osThreadId TaskGetCanHandle;
-osThreadId TaskGetSuspensiHandle;
+osThreadId blinkingLedHandle;
+osThreadId inverterCheckHandle;
+osThreadId brakeCheckHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
 /* USER CODE END FunctionPrototypes */
 
-void StartDefaultTask(void const * argument);
-void TaskSend(void const * argument);
-void TaskGet(void const * argument);
-void TaskGetS(void const * argument);
+void blinkingLedEntry(void const * argument);
+void inverterCheckEntry(void const * argument);
+void brakeCheckEntry(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -123,21 +122,17 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
-  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+  /* definition and creation of blinkingLed */
+  osThreadDef(blinkingLed, blinkingLedEntry, osPriorityNormal, 0, 128);
+  blinkingLedHandle = osThreadCreate(osThread(blinkingLed), NULL);
 
-  /* definition and creation of TaskSendCan */
-  osThreadDef(TaskSendCan, TaskSend, osPriorityLow, 0, 128);
-  TaskSendCanHandle = osThreadCreate(osThread(TaskSendCan), NULL);
+  /* definition and creation of inverterCheck */
+  osThreadDef(inverterCheck, inverterCheckEntry, osPriorityNormal, 0, 128);
+  inverterCheckHandle = osThreadCreate(osThread(inverterCheck), NULL);
 
-  /* definition and creation of TaskGetCan */
-  osThreadDef(TaskGetCan, TaskGet, osPriorityNormal, 0, 128);
-  TaskGetCanHandle = osThreadCreate(osThread(TaskGetCan), NULL);
-
-  /* definition and creation of TaskGetSuspensi */
-  osThreadDef(TaskGetSuspensi, TaskGetS, osPriorityBelowNormal, 0, 128);
-  TaskGetSuspensiHandle = osThreadCreate(osThread(TaskGetSuspensi), NULL);
+  /* definition and creation of brakeCheck */
+  osThreadDef(brakeCheck, brakeCheckEntry, osPriorityNormal, 0, 128);
+  brakeCheckHandle = osThreadCreate(osThread(brakeCheck), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -145,98 +140,104 @@ void MX_FREERTOS_Init(void) {
 
 }
 
-/* USER CODE BEGIN Header_StartDefaultTask */
+/* USER CODE BEGIN Header_blinkingLedEntry */
 /**
-  * @brief  Function implementing the defaultTask thread.
+  * @brief  Function implementing the blinkingLed thread.
   * @param  argument: Not used 
   * @retval None
   */
-/* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void const * argument)
+/* USER CODE END Header_blinkingLedEntry */
+void blinkingLedEntry(void const * argument)
 {
 
-  /* USER CODE BEGIN StartDefaultTask */
+  /* USER CODE BEGIN blinkingLedEntry */
   /* Infinite loop */
   for(;;)
   {
-
-	HAL_GPIO_WritePin(LED_G_GPIO_Port, LED_G_Pin, GPIO_PIN_SET);
-	osDelay(500);
-	HAL_GPIO_WritePin(LED_G_GPIO_Port, LED_G_Pin, GPIO_PIN_RESET);
-	osDelay(500);
-	osDelay(50);
-    JDO_SendCan();
-    JDO_GetCan();
+    vTaskDelay(pdMS_TO_TICKS(1));
+    HAL_GPIO_TogglePin(LED_Y_GPIO_Port, LED_Y_Pin);
+    /* Infinite loop */
+    for(;;)
+    {
+      HAL_GPIO_TogglePin(LED_Y_GPIO_Port, LED_Y_Pin);
+      vTaskDelay(pdMS_TO_TICKS(200));
+    }
   }
-  /* USER CODE END StartDefaultTask */
+  /* USER CODE END blinkingLedEntry */
 }
 
-/* USER CODE BEGIN Header_TaskSend */
+/* USER CODE BEGIN Header_inverterCheckEntry */
 /**
-* @brief Function implementing the TaskSendCan thread.
+* @brief Function implementing the inverterCheck thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_TaskSend */
-void TaskSend(void const * argument)
+/* USER CODE END Header_inverterCheckEntry */
+void inverterCheckEntry(void const * argument)
 {
-  /* USER CODE BEGIN TaskSend */
+  /* USER CODE BEGIN inverterCheckEntry */
   /* Infinite loop */
+  int inverterActive = 0;
   for(;;)
   {
-	  osDelay(500);
-	#ifdef ph_debug
-	  JDO_SendCan();
-	#endif //debug
+    vTaskDelay(pdMS_TO_TICKS(1));
+    if (HAL_GPIO_ReadPin(INVERTER_ACTIVE_GPIO_Port, INVERTER_ACTIVE_Pin) != inverterActive)
+    {
+      if (!inverterActive)
+      {
+        inverterActive = 1;
+        HAL_GPIO_TogglePin(SOUND_BUZZER_GPIO_Port, SOUND_BUZZER_Pin);
+        HAL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin);
+        vTaskDelay(pdMS_TO_TICKS(1500));
+        HAL_GPIO_TogglePin(SOUND_BUZZER_GPIO_Port, SOUND_BUZZER_Pin);
+        HAL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin);
+      }
+      else
+      {
+        inverterActive = 0;
+      }
+    }
   }
-  /* USER CODE END TaskSend */
+  /* USER CODE END inverterCheckEntry */
 }
 
-/* USER CODE BEGIN Header_TaskGet */
+/* USER CODE BEGIN Header_brakeCheckEntry */
 /**
-* @brief Function implementing the TaskGetCan thread.
+* @brief Function implementing the brakeCheck thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_TaskGet */
-void TaskGet(void const * argument)
+/* USER CODE END Header_brakeCheckEntry */
+void brakeCheckEntry(void const * argument)
 {
-  /* USER CODE BEGIN TaskGet */
+  /* USER CODE BEGIN brakeCheckEntry */
   /* Infinite loop */
+
+  uint32_t initialPedalBreakValue;
+  uint32_t pedalBreakValue;
+  float initialVoltage;
+  float voltage;
+
+  HAL_ADC_Start(&hadc1);
+  HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
+  initialPedalBreakValue = HAL_ADC_GetValue(&hadc1); // Read value (0–4095 on 12-bit ADC)
+  initialVoltage = (initialPedalBreakValue / 4095.0f) * 3.3f;
+
   for(;;)
   {
-	  osDelay(1);
-	  if(nCM == 1){
-		  JDO_GetCan();
-	  }
-	  nCM =0;
-  }
-  /* USER CODE END TaskGet */
-}
+    vTaskDelay(pdMS_TO_TICKS(1));
+    HAL_ADC_Start(&hadc1);
+    HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
+    pedalBreakValue = HAL_ADC_GetValue(&hadc1); // Read value (0–4095 on 12-bit ADC)
+    if (pedalBreakValue > (initialPedalBreakValue + initialPedalBreakValue / 100)) {
+      HAL_GPIO_WritePin(BRAKE_LIGHT_GPIO_Port, BRAKE_LIGHT_Pin, GPIO_PIN_SET);
+    } else {
+      HAL_GPIO_WritePin(BRAKE_LIGHT_GPIO_Port, BRAKE_LIGHT_Pin, GPIO_PIN_RESET);
+    }
 
-/* USER CODE BEGIN Header_TaskGetS */
-/**
-* @brief Function implementing the TaskGetSuspensi thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_TaskGetS */
-void TaskGetS(void const * argument)
-{
-  /* USER CODE BEGIN TaskGetS */
-  /* Infinite loop */
-  for(;;)
-  { //TODO: Check if usage of HAL_ADC PollForConversion and GetValue are used correctly (inteded function is to read the two different GPIO's)
-    //Start ADC
-    //HAL_ADC_Start(&hadc1);
-    //Start Conversion(s?)
-    //HAL_ADC_PollForConversion(&hadc1, 100);
-    //Get Value 1 and 2 and send them to CAN
-    //JDO_SendPoti(HAL_ADC_GetValue(&hadc1),HAL_ADC_GetValue(&hadc1));
-    //HAL_ADC_Stop(&hadc1);
-    osDelay(10);
+    voltage = (pedalBreakValue / 4095.0f) * 3.3f;
   }
-  /* USER CODE END TaskGetS */
+  /* USER CODE END brakeCheckEntry */
 }
 
 /* Private application code --------------------------------------------------*/
